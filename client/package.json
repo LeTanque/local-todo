@@ -15,6 +15,7 @@
   },
   "build": {
     "appId": "com.cyberpunk2044todo.app",
+    "electronVersion": "43.4.1",
     "files": [
       "electron/main.cjs",
       ".next/standalone/**/*"
