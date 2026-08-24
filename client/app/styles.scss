@@ -2,6 +2,7 @@
 $shadedBorder: #333333;
 $electricBlue: #00d9ff;
 $electricBlueShaded: #18484e;
+$electricBlueMuted: #7ad4e6;
 $onePxBorder: 1px solid $electricBlue;
 
 
@@ -41,6 +42,78 @@ $onePxBorder: 1px solid $electricBlue;
 .todo.completed {
   text-decoration: line-through;
   color: $electricBlueShaded;
+}
+
+.todo-item {
+  align-items: flex-start;
+
+  .checkmark,
+  .button {
+    margin-top: 1rem;
+  }
+}
+
+.todo-item-view {
+  flex-direction: column;
+  align-items: stretch;
+
+  .checkmark,
+  .button {
+    margin-top: 0;
+  }
+}
+
+.todo-main {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .todo {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+  }
+}
+
+.todo-description {
+  margin: 0 1rem 0.85rem;
+  color: $electricBlueMuted;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.todo-description.completed {
+  text-decoration: line-through;
+  opacity: 0.65;
+}
+
+.todo-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.todo-link:hover {
+  color: $electricBlue;
+}
+
+.todo-description-input {
+  flex-basis: 100%;
+  width: calc(100% - 2rem);
+  margin: 0 1rem 0.75rem;
+  padding: 0;
+  background: transparent;
+  color: $electricBlue;
+  border: none;
+  resize: vertical;
+  min-height: 2.75rem;
+  font: inherit;
+}
+
+.todo-description-input:focus {
+  outline: none;
 }
 
 .todos-frame > :nth-last-child(1), .no-border  {

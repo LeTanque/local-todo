@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 
-const { app, BrowserWindow, dialog } = require("electron");
+const { app, BrowserWindow, dialog, shell } = require("electron");
 const { execFile, spawn } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -26,6 +26,41 @@ const children = [];
 
 function wait(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function isHttpUrl(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function isAppUrl(url) {
+  try {
+    return new URL(url).origin === new URL(appUrl).origin;
+  } catch {
+    return false;
+  }
+}
+
+function openInBrowser(url) {
+  if (!isHttpUrl(url) || isAppUrl(url)) return;
+  void shell.openExternal(url);
+}
+
+function handleExternalLinks(window) {
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    openInBrowser(url);
+    return { action: "deny" };
+  });
+
+  window.webContents.on("will-navigate", (event, url) => {
+    if (isAppUrl(url) || !isHttpUrl(url)) return;
+    event.preventDefault();
+    openInBrowser(url);
+  });
 }
 
 function withoutElectronAsNode(env) {
@@ -77,17 +112,27 @@ function bin(name) {
 }
 
 async function isReachable(url) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1000);
+
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal: controller.signal });
     return response.ok;
   } catch {
     return false;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
-async function waitForServer(url, label, attempts = 80) {
+async function waitForServer(url, label, child, attempts = 40) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     if (await isReachable(url)) return;
+    if (child && child.exitCode != null && child.exitCode !== 0) {
+      throw new Error(
+        `${label} failed to start at ${url}. Port may already be in use.`,
+      );
+    }
     await wait(250);
   }
 
@@ -108,6 +153,7 @@ function track(child, label) {
     console.error(`${label} failed to start:`, error);
   });
   child.on("exit", (code, signal) => {
+    child.exitCode = code;
     if (code && code !== 0) {
       console.error(`${label} exited with code ${code}${signal ? ` (${signal})` : ""}`);
     }
@@ -206,25 +252,21 @@ function startDevProcess(command, args, cwd, label, env = withoutElectronAsNode(
 async function startBackend() {
   if (await isReachable(apiHealthUrl)) return;
 
-  if (app.isPackaged) {
-    startPackagedApi();
-  } else {
-    startDevProcess(bin("tsx"), ["src/server.ts"], serverDir, "API", apiEnvironment());
-  }
+  const child = app.isPackaged
+    ? startPackagedApi()
+    : startDevProcess(bin("tsx"), ["src/server.ts"], serverDir, "API", apiEnvironment());
 
-  await waitForServer(apiHealthUrl, "API");
+  await waitForServer(apiHealthUrl, "API", child);
 }
 
 async function startFrontend() {
   if (await isReachable(appUrl)) return;
 
-  if (app.isPackaged) {
-    startPackagedNext();
-  } else {
-    startDevProcess(bin("next"), ["dev", "-p", String(webPort)], clientDir, "Next.js");
-  }
+  const child = app.isPackaged
+    ? startPackagedNext()
+    : startDevProcess(bin("next"), ["dev", "-p", String(webPort)], clientDir, "Next.js");
 
-  await waitForServer(appUrl, "Next.js");
+  await waitForServer(appUrl, "Next.js", child);
 }
 
 async function createWindow() {
@@ -239,7 +281,6 @@ async function createWindow() {
     mainWindow = new BrowserWindow({
       width: 1200,
       height: 800,
-      show: false,
       title: "cyberpunk2077-todo",
       webPreferences: {
         contextIsolation: true,
@@ -248,7 +289,7 @@ async function createWindow() {
       },
     });
 
-    mainWindow.once("ready-to-show", () => mainWindow.show());
+    handleExternalLinks(mainWindow);
 
     await startBackend();
     await startFrontend();

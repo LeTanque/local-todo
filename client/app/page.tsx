@@ -2,12 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import type { TodoStatus } from "@/features/todos/api";
-import {
-  useCreateTodo,
-  useDeleteTodo,
-  useTodos,
-  useUpdateTodo,
-} from "@/features/todos/hooks";
+import { TodoItem } from "@/features/todos/TodoItem";
+import { useCreateTodo, useTodos } from "@/features/todos/hooks";
 
 const filters: { label: string; value: TodoStatus }[] = [
   { label: "All", value: "all" },
@@ -18,29 +14,35 @@ const filters: { label: string; value: TodoStatus }[] = [
 export default function Home() {
   const [status, setStatus] = useState<TodoStatus>("all");
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const { data: todos = [], error, isLoading } = useTodos(status);
   const createTodo = useCreateTodo();
-  const updateTodo = useUpdateTodo();
-  const deleteTodo = useDeleteTodo();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedTitle = title.trim();
+    const trimmedDescription = description.trim();
     if (!trimmedTitle) return;
 
     createTodo.mutate(
-      { title: trimmedTitle },
-      { onSuccess: () => setTitle("") },
+      {
+        title: trimmedTitle,
+        ...(trimmedDescription ? { description: trimmedDescription } : {}),
+      },
+      {
+        onSuccess: () => {
+          setTitle("");
+          setDescription("");
+        },
+      },
     );
   }
 
-  const mutationError =
-    createTodo.error ?? updateTodo.error ?? deleteTodo.error;
   const message =
     error instanceof Error
       ? error.message
-      : mutationError instanceof Error
-        ? mutationError.message
+      : createTodo.error instanceof Error
+        ? createTodo.error.message
         : null;
 
   return (
@@ -51,7 +53,7 @@ export default function Home() {
             <h1 className="todo title">Tasks & Todos</h1>
           </header>
 
-          <form className="todo-frame no-border" onSubmit={handleSubmit}>
+          <form className="todo-frame no-border flex-wrap" onSubmit={handleSubmit}>
             <label className="sr-only" htmlFor="new-todo">
               New todo
             </label>
@@ -70,6 +72,19 @@ export default function Home() {
             >
               {createTodo.isPending ? "Adding..." : "Add"}
             </button>
+            <label className="sr-only" htmlFor="new-todo-description">
+              Description
+            </label>
+            <textarea
+              className="todo-description-input"
+              disabled={createTodo.isPending}
+              id="new-todo-description"
+              maxLength={1000}
+              onChange={(event) => setDescription(event.target.value)}
+              placeholder="> Description (optional)"
+              rows={2}
+              value={description}
+            />
           </form>
 
           <div className="todo-frame">
@@ -98,36 +113,7 @@ export default function Home() {
           )}
 
           {todos.map((todo) => (
-            <div className="todo-frame" key={todo.id}>
-              <label
-                className={`todo ${todo.completed ? "completed" : "incomplete"}`}
-                htmlFor={`todo-${todo.id}`}
-              >
-                {todo.title}
-              </label>
-              <input
-                checked={todo.completed}
-                className={`w-4 h-4  focus:ring-2 focus:ring-brand-soft checkmark ${todo.completed ? "completed" : "incomplete"}`}
-                disabled={updateTodo.isPending}
-                id={`todo-${todo.id}`}
-                onChange={() =>
-                  updateTodo.mutate({
-                    id: todo.id,
-                    input: { completed: !todo.completed },
-                  })
-                }
-                type="checkbox"
-              />
-              <button
-                aria-label={`Delete ${todo.title}`}
-                disabled={deleteTodo.isPending}
-                onClick={() => deleteTodo.mutate(todo.id)}
-                type="button"
-                className="button"
-              >
-                Delete
-              </button>
-            </div>
+            <TodoItem key={todo.id} todo={todo} />
           ))}
 
           {!isLoading && !error && todos.length === 0 && (

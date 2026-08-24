@@ -44,6 +44,17 @@ test("invalid todo input returns a helpful 400 response", async () => {
   assert.deepEqual(await response.json(), {
     error: "title must contain 1 to 200 characters.",
   });
+
+  const descriptionResponse = await fetch(`${baseUrl}/api/todos`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: "Valid title", description: "x".repeat(1001) }),
+  });
+
+  assert.equal(descriptionResponse.status, 400);
+  assert.deepEqual(await descriptionResponse.json(), {
+    error: "description must be a string of at most 1000 characters.",
+  });
 });
 
 test("malformed JSON returns a helpful 400 response", async () => {
@@ -69,24 +80,43 @@ test("a todo can be created, updated, listed, and deleted", async () => {
     });
     assert.equal(createResponse.status, 201);
     const created = (await createResponse.json()) as {
-      todo: { id: number; title: string; completed: boolean; priority: string };
+      todo: {
+        id: number;
+        title: string;
+        description: string | null;
+        completed: boolean;
+        priority: string;
+      };
     };
     id = created.todo.id;
     assert.equal(created.todo.title, title);
+    assert.equal(created.todo.description, null);
     assert.equal(created.todo.completed, false);
     assert.equal(created.todo.priority, "high");
+
+    const describeResponse = await fetch(`${baseUrl}/api/todos/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ description: "  Bring notes  " }),
+    });
+    assert.equal(describeResponse.status, 200);
+    const described = (await describeResponse.json()) as {
+      todo: { description: string | null };
+    };
+    assert.equal(described.todo.description, "Bring notes");
 
     const updateResponse = await fetch(`${baseUrl}/api/todos/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completed: true, priority: "low" }),
+      body: JSON.stringify({ completed: true, priority: "low", description: "   " }),
     });
     assert.equal(updateResponse.status, 200);
     const updated = (await updateResponse.json()) as {
-      todo: { completed: boolean; priority: string };
+      todo: { completed: boolean; priority: string; description: string | null };
     };
     assert.equal(updated.todo.completed, true);
     assert.equal(updated.todo.priority, "low");
+    assert.equal(updated.todo.description, null);
 
     const listResponse = await fetch(`${baseUrl}/api/todos?status=completed`);
     assert.equal(listResponse.status, 200);

@@ -4,6 +4,7 @@ export type TodoStatus = "all" | "active" | "completed";
 export type Todo = {
   id: number;
   title: string;
+  description: string | null;
   completed: boolean;
   priority: TodoPriority;
   created_at: string;
@@ -12,11 +13,12 @@ export type Todo = {
 
 export type CreateTodoInput = {
   title: string;
+  description?: string | null;
   priority?: TodoPriority;
 };
 
 export type UpdateTodoInput = Partial<
-  Pick<Todo, "title" | "completed" | "priority">
+  Pick<Todo, "title" | "description" | "completed" | "priority">
 >;
 
 type TodosResponse = {
