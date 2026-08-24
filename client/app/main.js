@@ -19,18 +19,18 @@ function createWindow() {
 
   if (isDev) {
     // Development: point directly to your local Next.js dev server
-    mainWindow.loadURL("http://localhost:3000");
+    mainWindow.loadURL("http://localhost:4310");
   } else {
     // Production: Start the compiled Next.js standalone server
     const serverPath = join(__dirname, ".next", "standalone", "server.js");
 
     nextProcess = exec(`node ${serverPath}`, {
-      env: { ...process.env, PORT: 3000 },
+      env: { ...process.env, PORT: 4310 },
     });
 
     // Give the local server a second to boot up before loading the window
     setTimeout(() => {
-      mainWindow.loadURL("http://localhost:3000");
+      mainWindow.loadURL("http://localhost:4310");
     }, 1500);
   }
 

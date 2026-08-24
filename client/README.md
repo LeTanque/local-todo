@@ -10,9 +10,9 @@ Concurrent development build mode:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:4310](http://localhost:4310) with your browser to see the result.
 
-Make sure the backend postgres server is running, locally, at :3001
+Make sure the backend postgres server is running, locally, at :4311
 
 ## Electron framework
 

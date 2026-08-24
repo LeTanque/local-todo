@@ -4,7 +4,13 @@ const { app, BrowserWindow } = require("electron");
 const { execFile } = require("node:child_process");
 const path = require("node:path");
 
-const port = 3000;
+if (!app) {
+  throw new Error("Run this process with Electron, not Node. Unset ELECTRON_RUN_AS_NODE.");
+}
+
+app.setName("Todo");
+
+const port = Number(process.env.WEB_PORT ?? 4310);
 const appUrl = `http://127.0.0.1:${port}`;
 
 let mainWindow;
@@ -57,6 +63,7 @@ async function createWindow() {
     width: 1200,
     height: 800,
     show: false,
+    title: "Todo",
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
