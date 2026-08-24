@@ -66,5 +66,5 @@ temp/
 # Vercel
 .vercel
 
-# Certificates
-*.pem
+# Generated API bundle for the packaged Electron app
+client/resources/

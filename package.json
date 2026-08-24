@@ -6,7 +6,7 @@
     "server"
   ],
   "scripts": {
-    "dev": "concurrently -n server,client -c cyan,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
+    "dev": "npm run electron:dev -w client",
     "dev:web": "concurrently -n server,client -c cyan,magenta \"npm run dev -w server\" \"npm run next:dev -w client\"",
     "db:migrate": "npm run db:migrate -w server",
     "start": "concurrently -n server,client -c cyan,magenta \"npm run start -w server\" \"npm run start -w client\"",

@@ -5,10 +5,11 @@
   "private": true,
   "main": "electron/main.cjs",
   "scripts": {
-    "dev": "concurrently \"npm run next:dev\" \"npm run electron:dev\"",
+    "dev": "env -u ELECTRON_RUN_AS_NODE electron .",
     "next:dev": "next dev -p 4310",
-    "electron:dev": "wait-on http://127.0.0.1:4310 && env -u ELECTRON_RUN_AS_NODE electron .",
-    "dist": "npm run build && electron-builder",
+    "electron:dev": "env -u ELECTRON_RUN_AS_NODE electron .",
+    "dist": "npm run build && npm run bundle:api && electron-builder",
+    "bundle:api": "node scripts/bundle-api.cjs",
     "build": "next build && node scripts/copy-next-assets.cjs",
     "start": "next start -p 4310",
     "lint": "eslint"
@@ -26,6 +27,16 @@
     "directories": {
       "output": "dist"
     },
+    "extraResources": [
+      {
+        "from": "resources/api.cjs",
+        "to": "api.cjs"
+      },
+      {
+        "from": "resources/api.env",
+        "to": "api.env"
+      }
+    ],
     "mac": {
       "target": ["dir"]
     }

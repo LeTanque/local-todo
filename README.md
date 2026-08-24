@@ -24,11 +24,13 @@ Local Postgres with `trust` auth still needs `DB_PASSWORD` set because the API r
 
 ## Run
 
-Desktop app (Electron wraps Next.js on :4310, API on :4311):
+Desktop app. Electron starts the API and Next.js itself, so you do not need a second terminal:
 
 ```bash
 npm run dev
 ```
+
+You can also double-click `client/dist/mac-arm64/cyberpunk2077-todo.app` (or the copy in `/Applications`). Postgres still needs to be running.
 
 Web-only (no Electron window):
 
@@ -52,4 +54,3 @@ Then copy `./client/dist/mac-arm64/cyberpunk2077-todo.app` into `/Applications`.
 | `npm run dev:web` | API + Next.js in the browser |
 | `npm run db:migrate` | Apply SQL migrations |
 | `npm run test:api` | API integration tests |
-# local-todo
