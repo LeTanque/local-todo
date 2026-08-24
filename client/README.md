@@ -22,7 +22,7 @@ Needs to run `dist` to build the .app before running.
 npm run dist
 ```
 
-Launch the app from `./dist/mac-arm64/todo-electron.app`
+Launch the app from `./dist/mac-arm64/cyberpunk2077-todo.app`
 
 ## Goal
 

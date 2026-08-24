@@ -42,7 +42,7 @@ Packaged Electron app:
 npm run dist -w client
 ```
 
-Then launch `./client/dist/mac-arm64/todo-electron.app`.
+Then copy `./client/dist/mac-arm64/cyberpunk2077-todo.app` into `/Applications`.
 
 ## Scripts
 

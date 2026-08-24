@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "productName": "todo-electron",
+  "productName": "cyberpunk2077-todo",
   "version": "0.1.0",
   "private": true,
   "main": "electron/main.cjs",
@@ -14,7 +14,7 @@
     "lint": "eslint"
   },
   "build": {
-    "appId": "com.cyberpunk2044todo.app",
+    "appId": "com.cyberpunk2077todo.app",
     "electronVersion": "43.4.1",
     "files": [
       "electron/main.cjs",
@@ -25,6 +25,9 @@
     ],
     "directories": {
       "output": "dist"
+    },
+    "mac": {
+      "target": ["dir"]
     }
   },
   "dependencies": {

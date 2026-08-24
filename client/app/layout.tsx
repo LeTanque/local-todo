@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Todo",
+  title: "cyberpunk2077-todo",
   description: "Cyberpunk2044 todo",
 };
 
