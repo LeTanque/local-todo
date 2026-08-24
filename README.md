@@ -24,18 +24,16 @@ Local Postgres with `trust` auth still needs `DB_PASSWORD` set because the API r
 
 ## Run
 
-Web app (API on :3001, Next.js on :3000):
+Desktop app (Electron wraps Next.js on :4310, API on :4311):
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-Desktop (Electron + Next + API):
+Web-only (no Electron window):
 
 ```bash
-npm run dev:electron
+npm run dev:web
 ```
 
 Packaged Electron app:
@@ -50,7 +48,8 @@ Then launch `./client/dist/mac-arm64/todo-electron.app`.
 
 | Command | What it does |
 | --- | --- |
-| `npm run dev` | API + Next.js |
-| `npm run dev:electron` | API + Next.js + Electron |
+| `npm run dev` | API + Next.js + Electron |
+| `npm run dev:web` | API + Next.js in the browser |
 | `npm run db:migrate` | Apply SQL migrations |
 | `npm run test:api` | API integration tests |
+# local-todo
