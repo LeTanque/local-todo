@@ -1,0 +1,80 @@
+// Colors
+$shadedBorder: #333333;
+$electricBlue: #00d9ff;
+$electricBlueShaded: #18484e;
+$onePxBorder: 1px solid $electricBlue;
+
+
+// Styles
+.todos-main {
+  display: flex;
+  justify-content: center;
+}
+.todos-frame {
+  justify-content: flex-start;
+  align-items: flex-start;
+  border: $onePxBorder;
+  max-width: 800px;
+  width: 800px;
+  box-shadow: 0px 0px 7px 0px $electricBlue;
+}
+.todos-frame-inset {
+  box-shadow: inset 0px 0px 5px 0px $electricBlue;
+}
+
+.todo-frame {
+  border-bottom: 1px solid $shadedBorder;
+  width: calc(100% - 0.5rem);
+  margin: 0.25rem;
+  display: flex;
+  align-items: center;
+  .checkmark {
+    margin-right: 1.5rem;
+  }
+}
+.todo {
+  margin: 1rem;
+  margin-right: 2rem;
+  width: calc(100% - 0.5rem);
+  color: $electricBlue;
+}
+.todo.completed {
+  text-decoration: line-through;
+  color: $electricBlueShaded;
+}
+
+.todos-frame > :nth-last-child(1), .no-border  {
+  border-bottom: none;
+}
+
+.todo-frame.title {
+  border-bottom: $onePxBorder;
+  border-right: none;
+  width: calc(100% - 0.5rem);
+}
+
+.todo.title {
+  font-weight: bold;
+  color: $electricBlue;
+  width: 100%;
+  text-align: center;
+}
+
+.button {
+  border: $onePxBorder;
+  padding: 2px 10px;
+  background-color: black;
+  color: $electricBlue;
+  margin-right: 1rem;
+}
+.button:hover {
+  background-color: $electricBlueShaded;
+}
+
+.select-filter {
+  border: $onePxBorder;
+  padding: 2px 10px;
+  background-color: black;
+  color: $electricBlue;
+  margin-right: 1rem;
+}
